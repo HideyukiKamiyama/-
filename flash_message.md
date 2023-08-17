@@ -65,7 +65,7 @@ add_flash_types :success, :info, :warning, :danger
 
 また、上記の設定を行うことでControllerのredirectをフラッシュメッセージを含めて1行で記載できます。
 
-add_flash_types を定義しなくても毎回flashを記載すればフラッシュメッセージの表示はできますが、記述量を減らすことができるので覚えておくと良い。」
+add_flash_types を定義しなくても毎回flashを記載すればフラッシュメッセージの表示はできますが、記述量を減らすことができるので覚えておくと良い。
 
 ```ruby
 # BEFORE
@@ -81,6 +81,22 @@ redirect_to login_path, success: 'hoge'
 # add_flash_typesを定義していなくても、flash: { } の記載を省略できる
 redirect_back_or_to root_path, success: 'hoge'
 ```
+
+flash.nowを使用する場合は省略はせずに記述する。
+
+```html
+ーーコントローラー記入例：
+if article.save
+  redirect_to root_path, notice: "登録が完了しました"
+else
+  flash.now[:alert] = "名前を入力してください"
+  render :new, status: :unprocessable_entity
+end
+```
+
+[【Rails】フラッシュメッセージの設定（bootstrap） - Qiita](https://qiita.com/mmaumtjgj/items/5ebf4673357dceab9de2)
+
+注意：上記の`status: :unprocessable_entity`はRails７系以降ではrenderでフラッシュメッセージを使用する際に記述しないとフラッシュメッセージが表示されないので注意。
 
 # Bootstrap
 
