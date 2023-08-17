@@ -72,11 +72,36 @@ f.password_field # パスワード用のフォームを作成
 
 ---
 
-form_withの特徴としてデフォルトでremote:truegが付与されていることが挙げられます。remote:tureを使用することでAjaxを使用することができるようになり、非同期通信によりWebページの一部を動的に変更することができるようになります。
+form_withの特徴としてデフォルトでremote:trueが付与されていることが挙げられます。remote:tureを使用することでAjaxを使用することができるようになり、非同期通信によりWebページの一部を動的に変更することができるようになります。
 
 [form_with | Railsドキュメント](https://railsdoc.com/page/form_with)
 
 [remote: trueでフォーム送信をAjax実装する方法とは？](https://pikawaka.com/rails/remote-true)
+
+# local: true
+
+---
+
+`form_with`はデフォルトで`remote: true`が付与されているため非同期通信になっている。これを同期通信にしたい場合に使用するのが`local: true`です。以下の例のように使用します。
+
+```html
+<%= form_with model: board, local: true do |f| %>
+   <div class="form-group">
+     <%= f.label :title %>
+     <%= f.text_field :title, class: 'form-control' %>
+   </div>
+   <div class="form-group">
+     <%= f.label :body %>
+     <%= f.text_area :body, class: 'form-control', rows: 10 %>
+   </div>
+ 
+   <%= f.submit class: 'btn btn-primary' %>
+ <% end %>
+```
+
+上記のように`local: true`をつけることで同期通信に変えることができます。
+
+[備忘録16:Rails-form_with local: true｜さしみ](https://note.com/sashimi299/n/n6b9c46c63573)
 
 # label要素のfor属性
 
@@ -90,3 +115,27 @@ label要素のfor属性には関連付けができる要素のid属性を記述�
 ```
 
 上記の例ではlabel要素のfor属性nameとinput要素のid属性nameが結びついており、input属性によって作成される入力フォームに「名前を入力してください」という説明書きを表示させることができます。
+
+[<input>: 入力欄（フォーム入力）要素 - HTML: ハイパーテキストマークアップ言語 | MDN](https://developer.mozilla.org/ja/docs/Web/HTML/Element/input#追加機能)
+
+[“for”属性｜“label”要素:フォームの内容のラベル｜HTML－havin' a coffee break｜珈琲とウェブデザイン](https://web.havincoffee.com/html/tag/label/for.html)
+
+# submitのname
+
+---
+
+submitタグのname属性のcommitパラメータはデフォルトで付与されるようになっている。以下ソース。
+
+[](https://github.com/rails/rails/blob/3-2-stable/actionpack/lib/action_view/helpers/form_tag_helper.rb#L428)
+
+# その他のオプション
+
+---
+
+1. data-disable-with
+
+data-disable-withを使うことでフォームを送信する際に入力フィールドを自動で無効にすることもできます。これによりユーザーの誤操作による2回クリックを無効にしHTTPリクエストの重複によるバックエンド側のエラーを防ぐことができます。
+
+[Rails で JavaScript を使用する - Railsガイド](https://railsguides.jp/v6.0/working_with_javascript_in_rails.html#入力を自動で無効にする)
+
+# その他参考サイト
