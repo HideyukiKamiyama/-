@@ -110,20 +110,6 @@ bin/rails routes
 
 [URLヘルパー](https://www.notion.so/URL-4c15e94c1673487aa6db12c28108d806?pvs=21)
 
-# その他の用語
-
----
-
-## Prefix
-
-Prefixは接頭辞と呼ばれこの後ろに_pathヘルパーをつけることでルーティングを設定することができます。
-
-パスにidが入っている場合はインスタンス変数にidの情報を含めて渡すことで指定することができます。
-
-例えばusersコントローラーのshowアクションを動かすときは通常のパスだとusers/"ユーザーのid"になりますが、Prefixを使って書くとuser_path(@user)のような記述になります。
-
-上の@userはコントローラーで@user = User.find(params[:id])などで記述してあげれば@userの中にはそのユーザーのidも含まれているのでuser_pathの引数として指定できます。
-
 ## ネスト定義
 
 ネスト定義する場合もresourceメソッドを使用することができます。
@@ -138,4 +124,22 @@ end
 
 こうすることでidの後ろにcommentsを付け加えたURLを作成することができます。
 
-[resourcesメソッドを使ってルーティングを定義しよう！](https://pikawaka.com/rails/resources)
+[Rails のルーティング - Railsガイド](https://railsguides.jp/routing.html#ネストしたリソース)
+
+[RailsのRoutingネストについて - Qiita](https://qiita.com/keisukegdk/items/beb5a62c17278c25c00d)
+
+[Rails初学者がつまずきやすいルーティングのネストを徹底解説 | 目指せ、スーパーエンジニア](https://hirocorpblog.com/rails-routing-nest/)
+
+# その他の用語
+
+---
+
+## Prefix
+
+Prefixは接頭辞と呼ばれこの後ろに_pathヘルパーをつけることでルーティングを設定することができます。
+
+パスにidが入っている場合はインスタンス変数にidの情報を含めて渡すことで指定することができます。
+
+例えばusersコントローラーのshowアクションを動かすときは通常のパスだとusers/"ユーザーのid"になりますが、Prefixを使って書くとuser_path(@user)のような記述になります。
+
+上の@userはコントローラーで@user = User.find(params[:id])などで記述してあげれば@userの中にはそのユーザーのidも含まれているのでuser_pathの引数として指定できます。
