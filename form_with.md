@@ -52,21 +52,15 @@ f.password_field # パスワード用のフォームを作成
 
 [Action View フォームヘルパー - Railsガイド](https://railsguides.jp/form_helpers.html#フォーム要素を生成するヘルパー)
 
-# name属性をerbで表記する場合
+1. placeholderオプション
 
----
+text_fieldなどにオプションでplaceholderを設定できます。以下例です。
 
-```
-<%= f.text_field :name %>
-```
-
-送信先をmodelで指定している場合は、上記のコードは次のようにコンパイルされます。
-
-```
-<input type="text" name="user[name]" id="user_name" />
+```ruby
+<%= f.text_field :title, placeholder: "タイトル" %>
 ```
 
-つまりuserモデルのnameカラムに関する情報であることが分かるように自動で変換されるため、erbで:user[name]と記述するとエラーになってしまいます。
+[text_field_tag | Railsドキュメント](https://railsdoc.com/page/text_field_tag)
 
 # remote: true
 
@@ -103,7 +97,105 @@ form_withの特徴としてデフォルトでremote:trueが付与されている
 
 [備忘録16:Rails-form_with local: true｜さしみ](https://note.com/sashimi299/n/n6b9c46c63573)
 
-# label要素のfor属性
+# name属性、id属性をerbで表記する場合
+
+---
+
+- 送信先がモデルではない場合
+    
+    
+    ```html
+    <%= f.text_field :email %>
+    ```
+    
+    送信先がモデルではない場合、上記のerbは次のようにコンパイルされます。
+    
+    ```html
+    <input type="text" name="email" id="email" />
+    ```
+    
+    つまり、`f.text_field`の右側に記述した`:〇〇`がそのままname属性とid属性になります。
+    
+- 送信先がモデルの場合
+    
+    
+    ```html
+    <%= f.text_field :email %>
+    ```
+    
+    送信先をmodelで指定している場合(今回の例はuserモデル)は、上記のコードは次のようにコンパイルされます。
+    
+    ```html
+    <input type="text" name="user[email]" id="user_email" />
+    ```
+    
+    つまり送信先をuserモデルにしておくことで`<%= f.text_field :email %>`と記述することで`name="user[email]"`と`id="user_email"`を自動で作成してくれます。そのため、erbで:user[email]と記述するとエラーになってしまいます。
+    
+- name属性の付け方
+    
+    以下の例のようにname属性の付与は自分で設定するよりもform_withによる自動付与に任せた方が好ましいとされています。
+    
+    ```html
+    # BAD f.labelのname属性を、name:で個別に指定している
+    
+    <%= form_with model: board do |f| %>
+      <div class="form-group">
+        <%= f.label :title, name: 'title' %>
+        <%= f.text_field :title, class: 'form-control' %>
+      </div>
+    
+    # GOOD f.labelのname属性を、form_withの自動付与に任せている
+    
+    <%= form_with model: board do |f| %>
+      <div class="form-group">
+        <%= f.label :title %>
+        <%= f.text_field :title, class: 'form-control' %>
+      </div>
+    ```
+    
+
+# label要素
+
+---
+
+1. labelの表示
+
+---
+
+- 送信先がモデルではない場合
+    
+    erbで入力フォームにラベルを表示する場合は以下のように記述します。
+    
+    ```html
+    <%= f.label :email, class: "form-label" %>
+    ```
+    
+    上記のコードは次のようにコンパイルされます。
+    
+    ```html
+    <label class="form-label" for="email">Email</label>
+    ```
+    
+    つまり`f.label`の右側に`:〇〇`と記述するとfor属性に〇〇が設定され、〇〇の頭文字を大文字にしたものがブラウザ上に表示されます。
+    
+- 送信先がモデルの場合
+    
+    また、送信先にモデルを指定している場合の例は次のようになります。
+    
+    ```html
+    <%= f.label :email, class: "form-label" %>
+    ```
+    
+    上記のようにerbを記述した場合、次のようにコンパイルされます。
+    
+    ```html
+    <label class="form-label" for="user_email">Email</label>
+    ```
+    
+    つまり`f.label`の右側に`:〇〇`と記述した場合にそのモデル名がfor属性に追加され`for=”モデル名_〇〇”`となります。
+    
+
+1. label要素のfor属性
 
 ---
 
@@ -124,9 +216,15 @@ label要素のfor属性には関連付けができる要素のid属性を記述�
 
 ---
 
-submitタグのname属性のcommitパラメータはデフォルトで付与されるようになっている。以下ソース。
+submitタグのname属性のcommitパラメータはデフォルトで付与されるようになっています。以下ソース。
 
 [](https://github.com/rails/rails/blob/3-2-stable/actionpack/lib/action_view/helpers/form_tag_helper.rb#L428)
+
+また、他の名前をつけたい場合は自分で記述することもできます。
+
+[submit（送信ボタン）](http://w-d-l.net/html__tags__body__form__input__submit/)
+
+[フォームの送信ボタンに名前（name属性）を付ける | フロントエンドBlog | ミツエーリンクス](https://www.mitsue.co.jp/knowledge/blog/frontend/201412/04_1400.html)
 
 # その他のオプション
 
@@ -137,5 +235,17 @@ submitタグのname属性のcommitパラメータはデフォルトで付与さ�
 data-disable-withを使うことでフォームを送信する際に入力フィールドを自動で無効にすることもできます。これによりユーザーの誤操作による2回クリックを無効にしHTTPリクエストの重複によるバックエンド側のエラーを防ぐことができます。
 
 [Rails で JavaScript を使用する - Railsガイド](https://railsguides.jp/v6.0/working_with_javascript_in_rails.html#入力を自動で無効にする)
+
+1. rows
+
+フォームのテキストエリアの幅をrowsオプションで指定することができます。CSSは個別にHTMLで指定するより一つのファイルで管理することが好ましいので、入力幅を指定したい場合はstyle属性で指定するのではなくrowsオプションで指定するのが良いとされています。
+
+```html
+# BAD styleで高さを指定して、入力幅を設定している
+<%= f.text_area :body, class: 'form-control', style: 'height: 200px', row: 10 %>
+
+# GOOD styleを使用せずに、rows:オプションで入力幅を設定している
+<%= f.text_area :body, class: 'form-control', rows: 10 %>
+```
 
 # その他参考サイト
