@@ -120,7 +120,9 @@ end
 
 今回の例ではprependを使って対象の先頭に要素を追加しています。第一引数の”posts”はturbo_frame_tagのidを指定しており、対応するturbo_frame_tagを処理します。
 
-今回のカリキュラムではコントローラを次のように記述しましたが、今回のように送信先の指定がない場合はレンダリングされるファイルはそのコントローラのアクション名と同じものになります。
+今回のカリキュラムではコントローラを次のように記述しましたが、今回のように送信先の指定がない場合はレンダリングされるファイルはそのコントローラのアクション名と同じものになります。（userの新規登録でusersコントローラのnewアクションを踏んだ場合にusers/newに移動するのと同じ原理です。）
+
+また、turbo-streamを使っている場合はそのアクション名に対応したturbo-steram.erbファイルを探し出し呼び出します。
 
 ```ruby
 class BookmarksController < ApplicationController
@@ -140,19 +142,23 @@ end
 
 1. ビューファイルの記述
 
+create.turbo-stream.erb
+
 ```html
-<%= turbo_frame_tag "bookmark-button" do %>
-	<div class="ms-auto">
-	  <% if current_user.bookmark?(board)  %>
-	    <%= render 'bookmarks/unbookmark', board: board %>
-	  <% else  %>
-	    <%= render 'bookmarks/bookmark', board: board %>
-	  <% end %>
-	</div>
+<%= turbo_stream.replace "bookmark-button-for-board-#{@board.id}" do %>
+  <%= render 'bookmarks/unbookmark', board: @board %>
 <% end %>
 ```
 
-このように記述することでid=”bookmark-button”を対象とした変更を受け付けることができる。
+destroy.turbo-stream.erb
+
+```html
+<%= turbo_stream.replace "unbookmark-button-for-board-#{@board.id}" do %>
+  <%= render 'bookmarks/bookmark', board: @board %>
+<% end %>
+```
+
+上記のようにturbo-streamで対象の部分を挟むことによりその部分を非同期で通信することが可能です。
 
 - RUNTEQ課題ヒント
     
