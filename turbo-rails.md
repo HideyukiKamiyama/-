@@ -24,19 +24,6 @@ HTMLのbodyタグのみを使って画面を更新します。headタグは読�
 
 また、Turbo FramesがHTML要素の置換しかできないのに対し、こちらでは追加、更新、削除もできる。
 
-# Turbo Streamのメソッド
-
----
-
-Gemfileにturbo-railsを読み込むことでTurbo Streamのメソッドを使えるようになります。
-
-以下が代表的なメソッドです。
-
-- append(対象の末尾に追加)
-- prepend(対象の先頭に追加)
-- replace(対象の要素を置き換え）
-- remove(対象を削除)
-
 # Turbo Frames
 
 ---
@@ -71,9 +58,183 @@ Gemfileにturbo-railsを読み込むことでTurbo Streamのメソッドを使�
 
 ---
 
-1. コントローラの記述
+画面の一部分のみ読み込むことで通信量を抑えることができる。Turbo Framesと比べて柔軟性が高い。
 
-Turbo Streamを使う場合のコントローラの例を以下に示します。
+基本的な記述法としては`turbo_stream.アクション名`の後に`ターゲット名`を記述するのが一般的であり、このターゲット名で**どこのidの要素を変えたいかを指定して使う**のが基本となっている。
+
+### Turbo Streamのメソッドと記述方法
+
+---
+
+Gemfileにturbo-railsを読み込むことでTurbo Streamのメソッドを使えるようになります。
+
+メソッドは７つありますが代表的なもののみまとめます。
+
+- append(対象の末尾に追加)
+- prepend(対象の先頭に追加)
+- replace(対象の要素を要素ごと置き換え）
+- update(対象の要素のコンテンツを置き換え）
+- remove(対象を削除)
+
+これらのメソッドによる処理ではデータベースは変更していない。**あくまでブラウザ上の表示を部分的に変更し、通信量を削減するための処理**となる。
+
+コントローラのアクション内でデータの追加（削除）などの処理を行った場合、画面上の変化はリストが一つ増える（減る）程度の場合が多く、そのような時に画面全てを再読込みしていたら通信量が無駄に多くなってしまう。
+
+これを防ぐためにアクション実行後にredirect_toやrenderで`〇〇.html.erb`ファイルを読み込むのではなく、turbo-steramを実行する。
+
+turbo-streamの実行方法は大きく二つあり、
+
+1. コントローラ内でturbo-streamを実行する
+2. アクション名.turbo-stream.erbを作成しそのファイルをrenderした後、ファイル内のturbo-streamを実行する
+
+のどちらかで実行する。
+
+### 省略記法
+
+---
+
+prependを例にしたこれらの記法は全て以下の記述と同じ処理を行う。
+
+```html
+<%# この4つは全て同じ結果になる %>
+
+<%# 1. 省略形 %>
+<%= turbo_stream.prepend "cats", @cat %>
+
+<%# 2. renderを省略しない場合 %>
+<%= turbo_stream.prepend "cats" do %>
+  <%= render @cat %>
+<% end %>
+
+<%# 3. renderのオプションを省略しない場合 %>
+<%= turbo_stream.prepend "cats" do %>
+  <%= render partial: "cates/cat",
+             locals: { cat: @cat } %>
+<% end %>
+
+<%# 4. renderのオプションをturbo_stream.prependのオプションとして使用する場合 %>
+<%= turbo_stream.prepend "cats",
+      partial: "cates/cat",
+      locals: { cat: @cat } %>
+```
+
+上記の省略記法はディレクトリ構造によっては省略できない場合もあるため必要に応じて変更する。
+
+### それぞれのメソッド毎の使い方
+
+---
+
+- append、prepend
+
+```html
+<%# turbo_stream.<アクション名> <ターゲットのid>, <追加するオブジェクト> %>
+<%= turbo_stream.prepend "cats", @cat %>
+<%= turbo_stream.append "cats", @cat %>
+```
+
+- replace、update
+
+```html
+<%# turbo_stream.<アクション名> <更新するオブジェクト> %>
+<%= turbo_stream.replace @cat %>
+<%= turbo_stream.update @cat %>
+```
+
+replaceとupdateは両方とも更新処理だが、replaceがターゲットの要素も含めて更新するのに対してupdateはターゲットのコンテンツのみを更新する。
+
+updateメソッドはターゲットのコンテンツ（中身）を更新するメソッドであるため変更したい要素の外側のHTMLタグのid属性をターゲットに実行する。
+
+- remove
+
+```html
+<%# turbo_stream.<アクション名> <削除するオブジェクト> %>
+<%= turbo_stream.remove @cat %>
+```
+
+ディレクトリ構造の都合で省略記法が使えない場合はオブジェクトの代わりにターゲットのidを記述すれば良い。removeはただ削除するだけであるためオブジェクトを渡さなくてもどのidの要素を削除するかが分かれば画面上から削除することができる。
+
+これらの記述は無理に省略記法を使うのではなく、ブロックを使った記法を用いると良い。
+
+### 実例
+
+---
+
+turbo-streamの記述はコントローラに記述する方法とビューファイルに記述する方法がある。それぞれ記述方法が少し異なるため例を含めて解説する。
+
+> ビューファイルに記述する場合
+> 
+
+以下のような`アクション名.turbo-stream.erb`という名前のファイルを作成しその中に記述します。そのアクションを実行した際に変更したい部分が複数ある場合はファイル内にturbo-streamの処理を複数記述することで実行するこができます。
+
+create.turbo-stream.erb
+
+```html
+<%= turbo_stream.replace "bookmark-button-for-board-#{@board.id}" do %>
+  <%= render 'bookmarks/unbookmark', board: @board %>
+<% end %>
+```
+
+destroy.turbo-stream.erb
+
+```html
+<%= turbo_stream.replace "unbookmark-button-for-board-#{@board.id}" do %>
+  <%= render 'bookmarks/bookmark', board: @board %>
+<% end %>
+```
+
+上記のようにturbo-streamで対象の部分を挟むことによりその部分を非同期で通信することが可能になる。
+
+上記のようにビューファイルに記述する場合、コントローラを以下のように記述しますが、今回のようにrenderやredirect_toの指定がない場合はレンダリングされるファイルはそのコントローラのアクション名と同じものになるため実行したアクションによって`create.turbo-stream.erb`や`destroy.turbo-stream.erb`を呼び出すことができる。
+
+これは、userの新規登録でusersコントローラのnewアクションを踏んだ場合にusers/newに移動するのと同じ原理であり、Railsにはデフォルトでこのような機能が備わっている。
+
+```ruby
+class BookmarksController < ApplicationController
+  def create
+    @board = Board.find(params[:board_id])
+    current_user.bookmark(@board)
+  end
+
+  def destroy
+    @board = current_user.bookmarks.find(params[:id]).board
+    current_user.unbookmark(@board)
+  end
+end
+```
+
+今回の場合は bookmarks/create.turbo_stream.erb と destroy.turbo-stream.erb を作成しているため
+
+```html
+createアクション　→　bookmarks/create.turbo_stream.erb 
+
+dstroyアクション　→　destroy.turbo-stream.erb
+```
+
+がそれぞれ呼び出される。
+
+> コントローラに記述する場合
+> 
+
+コントローラ内でのturbo-streamの記述はrespond_toを使う方法と使わない方法があります。（respond_toはturbo-streamで検索するとかなり出てくるため混乱しやすいと感じ、場合分けしてみました）
+
+1. コントローラ内におけるturbo-streamの一般的な記述法
+
+次のように記述することでコントローラからturbo-streamを実行することができます。
+
+```ruby
+if @post.save
+  render turbo_stream: turbo_stream.prepend(
+    "posts",
+    partial: "posts/post",
+    locals: { post: @post })
+else
+  render :new, status: :unprocessable_entity
+end
+```
+
+今回の例ではprependを使って対象の先頭に要素を追加しています。第一引数の”posts”はturbo-streamで変更したい部分のidを指定しています。
+
+1. respond_toを使う方法
 
 ```ruby
 class PostsController < ApplicationController
@@ -96,7 +257,7 @@ end
 
 respond_toは受け取ったフォーマットの種類によって処理を分けるインスタンスメソッドです。
 
-format.〇〇でフォーマットを指定し、その後ろに対応する処理を記述します。
+format.〇〇でフォーマットを指定し、その後ろに対応する処理を記述します。これによりturbo-streamの処理と普通のhtmlの処理を分けることができます。（正直使い方はよく分かってない。疲れたので今度調べる）
 
 - respond_to参考サイト
     
@@ -105,60 +266,27 @@ format.〇〇でフォーマットを指定し、その後ろに対応する処�
     [[Rails]respond_toメソッドでリクエストフォーマットによってレンダリングを変える](https://zenn.dev/yusuke_docha/articles/3220613a756b71)
     
 
-また、フォーマットによって処理を分けない場合は次のようにrespond_toを使わずに記述します。
+# 参考サイト
 
-```ruby
-if @post.save
-  render turbo_stream: turbo_stream.prepend(
-    "posts",
-    partial: "posts/post",
-    locals: { post: @post })
-else
-  render :new, status: :unprocessable_entity
-end
-```
+---
 
-今回の例ではprependを使って対象の先頭に要素を追加しています。第一引数の”posts”はturbo_frame_tagのidを指定しており、対応するturbo_frame_tagを処理します。
+[Rails で JavaScript を利用する - Railsガイド](https://railsguides.jp/v7.0/working_with_javascript_in_rails.html#turbo)
 
-今回のカリキュラムではコントローラを次のように記述しましたが、今回のように送信先の指定がない場合はレンダリングされるファイルはそのコントローラのアクション名と同じものになります。（userの新規登録でusersコントローラのnewアクションを踏んだ場合にusers/newに移動するのと同じ原理です。）
+[Turbo Reference](https://turbo.hotwired.dev/reference/streams)
 
-また、turbo-streamを使っている場合はそのアクション名に対応したturbo-steram.erbファイルを探し出し呼び出します。
+[Turbo Handbook](https://turbo.hotwired.dev/handbook/streams)
 
-```ruby
-class BookmarksController < ApplicationController
-  def create
-    @board = Board.find(params[:board_id])
-    current_user.bookmark(@board)
-  end
+[Turbo Streams（Fetch）｜猫でもわかるHotwire入門 Turbo編](https://zenn.dev/shita1112/books/cat-hotwire-turbo/viewer/turbo-streams-fetch)
 
-  def destroy
-    @board = current_user.bookmarks.find(params[:id]).board
-    current_user.unbookmark(@board)
-  end
-end
-```
+[Rails 7での新機能: Turbo FramesとTurbo Streamsを活用した実践ガイド](https://blog.to-ko-s.com/turbo-frames-turbo-streams/)
 
-今回の場合はbookmarks/create.turbo_stream.erbを作成しているためcreateアクションを踏んだ場合はこのファイルが呼び出されます。
+[Hotwire（Turbo）を試す その2: Turbo Streamsでページの一部の差替・追加 - Qiita](https://qiita.com/kazutosato/items/74ab0a22d41cd8859fad)
 
-1. ビューファイルの記述
+[GitHub - hotwired/turbo-rails: Use Turbo in your Ruby on Rails app](https://github.com/hotwired/turbo-rails/tree/main)
 
-create.turbo-stream.erb
+[](https://github.com/hotwired/turbo-rails/blob/main/app/models/turbo/streams/tag_builder.rb#L1)
 
-```html
-<%= turbo_stream.replace "bookmark-button-for-board-#{@board.id}" do %>
-  <%= render 'bookmarks/unbookmark', board: @board %>
-<% end %>
-```
-
-destroy.turbo-stream.erb
-
-```html
-<%= turbo_stream.replace "unbookmark-button-for-board-#{@board.id}" do %>
-  <%= render 'bookmarks/bookmark', board: @board %>
-<% end %>
-```
-
-上記のようにturbo-streamで対象の部分を挟むことによりその部分を非同期で通信することが可能です。
+[](https://github.com/hotwired/turbo-rails/blob/main/app/models/turbo/streams/tag_builder.rb#L53)
 
 - RUNTEQ課題ヒント
     
@@ -271,48 +399,3 @@ destroy.turbo-stream.erb
     上記のながれを参考にブックマーク機能に置き換えてみましょう
     
 - RUNTEQ復習ポイント
-    
-    # **ブックマークボタンのajax化の課題復習ポイント**
-    
-    # **復習ポイント**
-    
-    ## **アクション名に合わせて`アクション名.turbo_stream.erb`を作成していること**
-    
-    gem turbo-railsを使用するとturboを使っている時のリクエストが送られた時に自動的にアクション名と同名のturbo_stream.erbファイルを探して返します
-    
-    https://github.com/hotwired/turbo-rails/blob/main/app/models/turbo/streams/tag_builder.rb#L1
-    
-    create.turbo_stream.erb
-    
-    ```
-    <%= turbo_stream.replace "bookmark-button-for-board-#{@board.id}" do %>
-      <%= render 'boards/unbookmark', board: @board %>
-    <% end %>
-    
-    ```
-    
-    ## **replaceメソッドを使っていること**
-    
-    replaceを使うと引数に渡された文字列と同名のIDをもつ要素を描き変えます。
-    
-    https://github.com/hotwired/turbo-rails/blob/main/app/models/turbo/streams/tag_builder.rb#L53
-    
-    app/views/boards/_unbookmark.html.erb
-    
-    ```
-    <%= link_to bookmark_path(current_user.bookmarks.find_by(board_id: board.id)), id: "unbookmark-button-for-board-#{board.id}", data: { turbo_method: :delete } do %>
-      <i class="bi bi-star-fill"></i>
-    <% end %>
-    
-    ```
-    
-    destroy.turbo_stream.erb
-    
-    ```
-    <%= turbo_stream.replace "unbookmark-button-for-board-#{@board.id}" do %>
-      <%= render 'boards/bookmark', board: @board %>
-    <% end %>
-    ```
-    
-
-# 参考サイト
