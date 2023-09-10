@@ -1,6 +1,3 @@
-# render
-
-
 # renderとは
 
 
@@ -36,6 +33,9 @@ render new
 ```
 
 と記述することもできる。
+
+
+
 
 # localオプション
 
