@@ -281,7 +281,7 @@ skip_before_action :require_login, only: %i[new create]
 
 ### 参考サイト
 
-https://github.com/Sorcery/sorcery
+[github sorcery](https://github.com/Sorcery/sorcery)
 
 [sorceryを使用して、ユーザー機能を作成｜Sho](https://note.com/sho_0021/n/n6eb4abd4d232)
 
