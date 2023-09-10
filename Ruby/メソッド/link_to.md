@@ -11,6 +11,9 @@ link_toメソッドを使用するとHTMLにおける<a>タグのリンクを作
 
 第一引数には表示する文字列を、第二引数にはパスを渡すことでリンクを作ることができます。
 
+
+
+
 ## パスの書き方
 
 1. URLを使った方法
@@ -36,6 +39,10 @@ rake routes
 ```
 
 これを入力して表示されるルーティングの最後に_pathを追加することでパスを作成できます。
+
+
+
+
 
 # link_toタグ内に画像を埋め込む
 
@@ -75,10 +82,15 @@ link_toタグの中にタグを含めることで上記の画像の方法のよ�
 
 [【Rails】link_toメソッドの中にタグを含める](https://blog.yuhiisk.com/archive/2018/05/02/rails-link-to-in-tags.html)
 
+
+
+
 # その他の記述
 
-
 第三引数以降に記述することのあるコードをまとめます。
+
+
+
 
 ### 1. class
 
@@ -93,6 +105,9 @@ classオプションを指定することでCSSで使用するclass名をつけ�
 ```jsx
 <a class="クラス名" href="パス">表示する文字列</a>
 ```
+
+
+
 
 ### 2. style(非推奨)
 
@@ -110,6 +125,9 @@ style属性を指定することができます。
 
 基本的にCSSはCSSファイルにまとめて記述する事が好まれるためHTMLファイルに個別に記述することは避けた方が良い。
 
+
+
+
 ### 3. date-turbo-method
 
 link_toメソッドを使用した場合のデフォルトのHTTPリクエストはGETになりますが、date-turbo-method属性を使用することでPOSTやDELETEなどの他のリクエストを送ることができるようになります。
@@ -121,6 +139,9 @@ link_toメソッドを使用した場合のデフォルトのHTTPリクエスト
 [Rails で JavaScript を利用する - Railsガイド](https://railsguides.jp/working_with_javascript_in_rails.html#httpメソッド)
 
 [Tips詰め合わせ｜猫でもわかるHotwire入門 Turbo編](https://zenn.dev/shita1112/books/cat-hotwire-turbo/viewer/tips)
+
+
+
 
 ### 4. **date-turbo-confirmメソッド**
 
@@ -136,7 +157,10 @@ date-turbo-confirmメソッドを使用することでリンクを押した際�
 
 [Rails7におけるdata-confirm](https://hazm.jp/archives/180)
 
-この確認ダイアログの見た目を変えたい場合はhttps://github.com/ifad/data-confirm-modalのリンクにある`data-confirm-model`を使うと良い
+この確認ダイアログの見た目を変えたい場合は[github data-confirm-modal](https://github.com/ifad/data-confirm-modal)のリンクにある`data-confirm-model`を使うと良い
+
+
+
 
 ## link_to_unless_currentメソッド
 
@@ -148,6 +172,9 @@ link_to_unless_currentメソッドはlink_toメソッドと似たようなメソ
 ```
 
 このリンクはトップページへのリンクとして使用することができますが、自分が今トップページにいる場合にはリンクではなくただの文字列を表示します。
+
+
+
 
 # 参考サイト
 
