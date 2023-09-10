@@ -247,7 +247,7 @@ label要素のfor属性には関連付けができる要素のid属性を記述�
 
 submitタグのname属性のcommitパラメータはデフォルトで付与されるようになっています。以下ソース。
 
-[](https://github.com/rails/rails/blob/3-2-stable/actionpack/lib/action_view/helpers/form_tag_helper.rb#L428)
+[github form_tag](https://github.com/rails/rails/blob/3-2-stable/actionpack/lib/action_view/helpers/form_tag_helper.rb#L428)
 
 また、他の名前をつけたい場合は自分で記述することもできます。
 
