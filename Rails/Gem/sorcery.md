@@ -277,6 +277,13 @@ skip_before_action :require_login, only: %i[new create]
 ```
 
 
+# souceryのサブモジュール
+
+以下のサイトにsouceryで使われるサブモジュールが記述されています。
+
+[soucery](https://github.com/Sorcery/sorcery/wiki)
+
+
 
 
 ### 参考サイト
