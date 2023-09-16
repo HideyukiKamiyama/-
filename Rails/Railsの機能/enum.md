@@ -27,7 +27,7 @@ rails generate migration add_role_to_users
 ```ruby
 class AddStatusToUsers < ActiveRecord::Migration
   def change
-    add_column :users, :role, :integer, null: false, default: 2
+    add_column :users, :role, :integer, null: false, default: 0
   end
 end
 ```
@@ -47,13 +47,13 @@ enumの定義は次のようにモデル内で行います。
 ```ruby
 class User < ApplicationRecord
   # ハッシュ
-  enum role: { admin: 1, general: 2 }
+  enum role: { general: 0, admin: 1 }
 
   # 配列その１
-  enum role: [ :admin, :general ]
+  enum role: [ :general, :admin  ]
 
   # 配列その２
-  enum role: %i(admin general)
+  enum role: %i(general admin)
 end
 ```
 
@@ -72,13 +72,13 @@ end
 
 ```ruby
 User.roles
-#=> { admin: 1, general: 2 }
+#=> { general: 0, admin: 1 }
 
 User.roles[:admin]
 #=> 1
 
 User.roles["general"]
-#=> 2
+#=> 0
 ```
 
 
