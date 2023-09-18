@@ -154,3 +154,6 @@ user.general?
 [【Rails】enumとは？メリット、使い方、カラムの追加方法について - Qiita](https://qiita.com/katsu105/items/b8de8c12b80cb1a92ed8)
 
 [【Rails】モデルに列挙型（enum）を定義し、使いこなす方法](https://autovice.jp/articles/189)
+
+[ActiveRecord::Enum (Ruby on Rails edge)](https://edgeapi.rubyonrails.org/classes/ActiveRecord/Enum.html)
+
