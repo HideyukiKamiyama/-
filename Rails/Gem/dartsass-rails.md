@@ -43,6 +43,8 @@ Rails.application.config.dartsass.builds = {
 
 ここにファイルがプリコンパイルされることでアセットパイプラインにscssが読み込まれ、cssが適用されます。
 
+[ざっくりわかる Sprocketsとは - Qiita](https://qiita.com/nichidai3_0514/items/99596113ffe33a29dde8)
+
 
 
 # rails assets:precompileコマンド
