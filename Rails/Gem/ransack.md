@@ -3,9 +3,6 @@
 
 ransackとはRailsで簡単に検索機能を実装するためのgemです。簡単に記述できるシンプルモードとより複雑な条件を設定できるアドバンスモードがあります。
 
-
-
-
 # コントローラの記述
 
 
@@ -32,9 +29,6 @@ end
 - distinct: trueは重複を取り除く際に記述します。これは掲示板に対してコメントが投稿できる場合などに役立ちます。例えば掲示板Aに〇〇という文字が含まれたコメントが二つあった場合に〇〇で検索を行うと掲示板Aが二つ検索結果に表示されてしまいます。distinct: trueを記述することでこの重複を防ぐことができます。
 
 この書き換えを行うことにより検索パラメータが渡された場合にその条件に該当するデータを絞り込むことができます。
-
-
-
 
 # Viewの記述
 
@@ -82,6 +76,8 @@ search_fieldは検索欄を作成します。HTMLタグのtype=”search”が�
 
 title_or_body_countはtitleカラムまたはbodyカラムの内部から入力した文字列が含まれているか部分一致で検索します。title_countにしたらtitleカラムのみから探し、body_countにしたらbodyカラムから探すようになります。この*_countの部分は検索の方法を示しており（今回は部分一致）、検索方法ごとに種類が存在します。
 
+predicate（述語）一覧
+
 | 検索方法 | 意味(英語) | 意味 |
 | --- | --- | --- |
 | *_eq | equal | 等しい |
@@ -102,18 +98,12 @@ title_or_body_countはtitleカラムまたはbodyカラムの内部から入力�
 
 `<%= search_form_for q, url: url do |f| %>`という書き方をしているため、render内でurlにパスを渡すことで送信先を設定できます。このような記述をすることでパーシャルの再利用性が高くなっています。
 
-
-
-
 # labelタグについて
 
 
 labelタグは入力フォームに何を入力するかをユーザーが判別しやすくするためのタグです。
 
 ransackについて検索するとlabelタグを記述しているパターンが多いが、検索フォームのように入力欄が一つしかなく、何を入力するかが明らかである場合にはlabelタグは記述しなくても問題ありません。
-
-
-
 
 # serch_formの部分テンプレートを使う際の注意点
 
@@ -145,8 +135,100 @@ requestオブジェクトはクライアントからのリクエストに関す�
 
 [Action Controller の概要 - Railsガイド](https://railsguides.jp/action_controller_overview.html#requestオブジェクト)
 
+# 日付の範囲選択
 
 
+〇〇月〇〇日〜〇〇月〇〇日のような日付の範囲を選択して検索する機能を実装する方法について解説します。
+
+先ほどのこちらの表を見ると
+
+predicate（述語）一覧
+
+| 検索方法 | 意味(英語) | 意味 |
+| --- | --- | --- |
+| *_eq | equal | 等しい |
+| *_not_eq | not equal | 等しくない |
+| *_lt | less than | より小さい |
+| *_lteq | less than or equal | より小さい（等しいものも含む） |
+| *_gt | grater than | より大きい |
+| *_gteq | grater than or equal | より大きい（等しいものも含む） |
+| *_cont | contains value | 部分一致（内容を含む） |
+
+以降を表すのが `_gteq` 、以前を表すのが `_lteq` であることが分かります。
+
+このpredicateを使用して〇〇月〇〇日以降〜〇〇月〇〇日以前という日付の範囲指定を行おうとしてもSQL上の指示は次のようになってしまいます。
+
+```ruby
+SELECT COUNT(DISTINCT "boards"."id") FROM "boards" WHERE ("boards"."created_at" >= '2022-01-01 00:00:00' AND "boards"."created_at" <= '2022-01-07 00:00:00')
+```
+
+そのため、上記の例では2022年の１月７日の０時以前しか含まれていないため１月７日がほとんど検索対象から外れてしまいます。
+
+そのため以下のようなコードを書いても狙った範囲は選択できません。
+
+```ruby
+<div class="d-inline me-3">
+  <%= f.date_field :created_at_gteq %>
+  <span>~</span>
+  <%= f.date_field :created_at_lteq %>
+</div>
+```
+
+### predicate（述語）のカスタム
+
+
+`config/initializers/ransack.rb`を作成し、次のように記述します。
+
+config/initialilzers/ransack.rb
+
+```ruby
+Ransack.configure do |config|
+  config.add_predicate 'lteq_end_of_day',
+                  arel_predicate: 'lteq',
+                  formatter: proc { |v| v.end_of_day }
+end
+```
+
+- config.add_predicate
+
+述語の名前を定義している
+
+- arel_predicate:
+
+カスタム元の述語を指定
+
+- formatter:
+
+arel_predicateで受け取った述語を実行する前に値を変換するための関数
+
+- proc
+
+ブロックをオブジェクト化する。これにより `{ |v| v.end_of_day }`の部分をオブジェクト化することができる。
+
+[class Proc (Ruby 3.2 リファレンスマニュアル)](https://docs.ruby-lang.org/ja/latest/class/Proc.html)
+
+- { |v| v.end_of_day }
+
+フォームに入力された日付をvで受け取り、その日付の終わり（23:59:59）までに変換する。
+
+end_of_dayはrailsに既に定義されているメソッド。
+
+### フォームの作成
+
+
+predicateのカスタムを行ったことにより `lteq_end_of_day` というメソッドを使用することができる。
+
+このメソッドを使って作成したフォームが次のようになる。
+
+```html
+<div class="d-inline me-3">
+  <%= f.date_field :created_at_gteq %>
+  <span>~</span>
+  <%= f.date_field :created_at_lteq_end_of_day %>
+</div>
+```
+
+これにより入力した日付の終わり（23:59:59）までを検索対処に含めることができる。
 
 # 参考サイト
 
@@ -162,3 +244,9 @@ requestオブジェクトはクライアントからのリクエストに関す�
 [Ransackで簡単に検索フォームを作る73のレシピ - 猫Rails](https://nekorails.hatenablog.com/entry/2017/05/31/173925)
 
 [ransackを使って検索機能がついたアプリを作ろう！](https://pikawaka.com/rails/ransack)
+
+[GitHub - activerecord-hackery/ransack: Object-based searching.](https://github.com/activerecord-hackery/ransack#search-matchers)
+
+[【ransack】日付選択検索とプルダウン選択 - Qiita](https://qiita.com/mmaumtjgj/items/34117cd07e9b7aa72585)
+
+[ransackを使って日付検索＆プルダウン選択する - Programming Journal](https://study-diary.hatenadiary.jp/entry/2020/09/06/123853)
