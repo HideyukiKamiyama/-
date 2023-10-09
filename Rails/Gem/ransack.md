@@ -230,6 +230,136 @@ predicateのカスタムを行ったことにより `lteq_end_of_day` という�
 
 これにより入力した日付の終わり（23:59:59）までを検索対処に含めることができる。
 
+
+# 複数のモデルに跨る検索
+
+
+## 前置
+
+
+今回は掲示板サイトで掲示板を「掲示板タイトル」、「掲示板に関連したコメント」、「掲示板の作成者」の３つの要素から検索したい。
+
+これらのモデルの関連付けは
+
+- Post : Comment = １ : 多
+- Post : User = 多 : １
+- Uaer : Profile = １ : １
+
+の関係になっている。また、UserのnameカラムはProfileモデルに保存されている。
+
+今回は掲示板をコメント、作成者で絞り込むためあくまで一覧で表示するのは掲示板となっている。
+
+そのためフォームの送信先や検索処理はPostコントローラで行う。
+
+## フォームの作成
+
+
+検索フォームを次のように編集する。
+
+```html
+<%= search_form_for @q, url: search_posts_path, class: "d-flex" do |f| %>
+  <%= f.search_field :title_cont, class: "form-control me-2", id: "search_field_of_post", placeholder: "投稿" %>
+  <%= f.search_field :comments_body_cont, class: "form-control me-2", id: "search_field_of_comment", placeholder: "コメント" %>
+  <%= f.search_field :user_profile_name_cont, class: "form-control me-2", id: "search_field_of_user", placeholder: "ユーザー" %>
+  <button class="btn btn-outline-success" type="submit">Search</button>
+<% end %>
+```
+
+今回は検索条件に `Postモデル`だけでなく、Postモデルに関連付けされている `Commentモデル` とUserモデルを経由した `Profileモデル` も検索対象に含める必要がある。
+
+その場合は次のサイトのようにフォームタグの要素名に、 `関連するモデル名_関連するモデルのカラム名` を指定することで関連付けされたモデルを対象に検索することができる。
+
+今回の例で言うとフォームの送信先がPostコントローラであるため
+
+- 掲示板のタイトルでの検索は `title_cont`
+- コメントでの検索は `comments_body_cont`
+
+Commentモデルにカラム名である `body` を繋げている。Postに対してCommentは複数存在するのでcommentsのように複数形にする
+
+- ユーザー名での検索は `user_profile_name_cont`
+
+これはUserモデルに関連付いたProfileモデルのnameカラムを指定しているためこのような記述になっている。Postに対するUser、Userに対するProfileはそれぞれ一つしか存在しないため単数系で記述している。
+
+[参考サイト１](https://qiita.com/sew_sou19/items/520d4348b2eaa7bf792c)
+
+[参考サイト２](https://woshidan.hatenadiary.jp/entry/2021/04/05/205301)
+
+## コントローラの編集
+
+
+- searchアクションの作成、編集
+
+今回は検索結果を `search.html.erb` で表示しようと思います。そのためsearchアクションを新しく作成し、次のように編集します。
+
+posts_controller.rb
+
+```ruby
+def search
+  @posts = @q.result(distinct: true).order(created_at: :desc).page(params[:page]).per(10)
+end
+```
+
+## ルーティングの設定
+
+
+検索結果のURLを `/posts/search` としたいため、postのルーティングにネストする形でcollectionのsearchのルーティングを作成します。
+
+```ruby
+resources :posts do
+  resources :comments, module: :posts
+  # 以下のcollectionブロックを追記し、/posts/search で検索できるようにする。
+  collection do
+    get 'search'
+  end
+end
+```
+
+## viewファイルの作成
+
+
+ルーティングに対応した `posts/search.html.erb` ファイルを作成します。内容は `posts/index.html.erb` とほぼ同じですが検索結果が無かった場合に「検索結果は０件です」と表示するようif文を使って分岐処理を行います。
+
+posts/search.html.erb
+
+```ruby
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <ul class="list-unstyled">
+        <% if @posts.present? %>
+          <%= render @posts %>
+        <% else %>
+          <p>検索結果は０件です</p>
+        <% end %>
+      </ul>
+      <%= paginate @posts %>
+    </div>
+  </div>
+</div>
+```
+
+以上で複数モデルに跨る検索機能を実装できました。
+
+# タグを使った検索
+
+
+掲示板にタグを設置し、そのタグをクリックすることでタグで検索を絞ります。
+
+タグの表示は以下のようにeach文を使用して行うことを想定しています。
+
+```ruby
+<div>
+  <% post.tags.each do |tag| %>
+    <%= link_to tag.name, search_posts_path(q: {tags_name_cont: tag.name}), class: "badge rounded-pill bg-primary text-decoration-none text-white" %>
+  <% end %>
+</div>
+```
+
+`link_to tag.name, search_posts_path(q: {tags_name_cont: tag.name})` この部分ではlink_toの送信先にパラメータとして`(q: {tags_name_cont: tag.name})`を渡している。これにより検索条件に`{tags_name_cont: tag.name}` が指定された検索オブジェクト `q` を渡すことができ、そのタグの名前で検索した結果を表示することができる。
+
+[参考サイト](https://qiita.com/DaichiA/items/d6da57578a2923e7bac3)
+
+
 # 参考サイト
 
 
