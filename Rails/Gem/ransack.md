@@ -258,7 +258,7 @@ predicateのカスタムを行ったことにより `lteq_end_of_day` という�
 
 ```html
 <%= search_form_for @q, url: search_posts_path, class: "d-flex" do |f| %>
-  <%= f.search_field :title_cont, class: "form-control me-2", id: "search_field_of_post", placeholder: "投稿" %>
+  <%= f.search_field :title_or_body_cont, class: "form-control me-2", id: "search_field_of_post", placeholder: "投稿" %>
   <%= f.search_field :comments_body_cont, class: "form-control me-2", id: "search_field_of_comment", placeholder: "コメント" %>
   <%= f.search_field :user_profile_name_cont, class: "form-control me-2", id: "search_field_of_user", placeholder: "ユーザー" %>
   <button class="btn btn-outline-success" type="submit">Search</button>
@@ -271,7 +271,7 @@ predicateのカスタムを行ったことにより `lteq_end_of_day` という�
 
 今回の例で言うとフォームの送信先がPostコントローラであるため
 
-- 掲示板のタイトルでの検索は `title_cont`
+- 掲示板のタイトル、本文での検索は `title_or_body_cont`
 - コメントでの検索は `comments_body_cont`
 
 Commentモデルにカラム名である `body` を繋げている。Postに対してCommentは複数存在するのでcommentsのように複数形にする
