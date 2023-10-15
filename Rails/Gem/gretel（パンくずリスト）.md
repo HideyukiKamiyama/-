@@ -59,17 +59,85 @@ end
 また`ビューに表示されてる名前`の部分には`Font Awesome`のような記号を含めることもできます。
 
 
-# 
+# viewファイルの編集
+
+viewのパンくずを表示したい部分に以下の記述をします。
+
+```html
+<%= breadcrumbs separator: "区切り文字" %>
+```
+
+この「区切り文字」の部分は複数のパンくずリストを繋げるためのもので
+
+```
+ホーム > ご利用案内 > お問い合わせ
+```
+
+のように記述したい場合は
+
+```html
+<%= breadcrumbs separator: " > " %>
+```
+
+と記述しても良いです。
+
+ただ、今回の`>`のような記号だとHTMLの閉じタグとして認識されてしまう可能性があるため次のように[特殊文字](https://www.htmq.com/text/)を記述すると良いでしょう。
+
+```html
+<%= breadcrumbs separator: " &rsaquo; " %>
+```
 
 
+## `application.html.erb`の編集
+
+今回は全てのページにパンくずリストを表示したいため`application.html.erb`に先ほどのコード`<%= breadcrumbs separator: " &rsaquo; " %>`を記述します。
 
 
+## それぞれのviewファイルでの呼び出し
 
+`application.html.erb`で記述した位置にパンくずを呼び出すためそれぞれのviewファイル内に次のような記述をします。
 
+```html
+<% breadcrumb :設定したcrumb名 %>
+```
 
+- ユーザー新規登録ページの場合
 
+```ruby
+# config/breadcrumb.rb
+crumb :user_new do
+  link "ユーザー登録", new_user_path
+  parent :root
+end
+```
 
+であった場合、crumb名は`user_new`であるためユーザー新規登録ページへの記述は
 
+```html
+<% breadcrumb :user_new %>
+```
+
+のようになります。
+
+- ユーザー詳細ページの場合
+
+ユーザー詳細のようにそのページのユーザー名などを表示したい場合はパンくずの設定を次のように記述します。
+
+```ruby
+# config/breadcrumb.rb
+crumb :user_show do |user|
+  link "#{user.name}さんの詳細", user_path(user)
+  parent :root
+end
+```
+
+上記のように記述した場合、crumb呼び出し時にuserインスタンスを渡す必要があります。
+
+```html
+<% breadcrumb :user_edit, @user %>
+```
+
+このように記述することでパンくずの表示にユーザー名を含ませることができるようになります。
 
 
 # 参考サイト
