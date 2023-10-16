@@ -43,6 +43,48 @@ dexcribeブロック内に記述するのが一般的です。
 
 [rspecを読みやすくメンテしやすく書くために](https://zenn.dev/yuji_developer/articles/52cc0e356b3748)
 
+
+# マッチャー
+
+マッチャーとは期待値と実際の値を比較して一致したか、一致しなかったかを返すオブジェクトです。
+RSpecではこのマッチャを使用してアプリが想定通りに動いているかを判定します。
+
+
+## within
+
+withinマッチャーは検査する対象をidやclassを使用して指定することが出来ます。
+
+例えば２つの`削除`ボタンが存在しているページで
+
+```ruby
+click_on '削除'
+```
+
+とした場合、
+
+```
+Ambiguous match, found 2 elements matching visible link or button "削除"
+```
+
+というエラーが発生してしまいます。
+これは条件に当てはまる要素が二つ存在しているためにこのようなエラーが発生しています。
+
+このような時に便利なのが`within`です。
+このマッチャーを使用することでクリックの対象をidやclassで指定することができるため上記のエラーを解消することが出来ます。
+
+使用方法は以下の通りです。
+
+```ruby
+before do
+  within '#user_1' do
+    click_on '削除'
+  end
+end
+```
+
+上記のコードには`within '#user_1'`と記述されている事からidがuser_1である削除ボタンを指定してクリックするテストを実行しています。
+
+
 # 処理の共通化（ログイン）
 
 
@@ -101,6 +143,7 @@ end
 
 これらのどちらかの読み込みを行うことで `login(user)` メソッドが使えるようになります。
 
+
 ### before
 
 
@@ -111,6 +154,7 @@ before { login(user) }
 ```
 
 上記の例ではloginモジュールによるログイン処理を対象のテスト前に実行します。
+
 
 # 機能別テスト
 
@@ -173,6 +217,7 @@ Factory_botを使用してuserインスタンスを作成。 `create(:user)` は
 
 新規登録後に遷移した画面内に `Mypage` と `Logout` の文字が存在しているか（画面遷移が正しく行えているか）を確認している。
 
+
 ### ログアウト
 
 
@@ -206,6 +251,7 @@ moduleで設定したloginメソッドでログイン状態にする。
 
 [Railsチュートリアルの第４版をRSpecでテスト-3 - Qiita](https://qiita.com/nanamemo_net/items/319615e6e5fdcd7d844a)
 
+
 # capybaraの設定
 
 
@@ -224,6 +270,7 @@ Capybara.register_driver :remote_chrome do |app|
   end
 ```
 
+
 # その他
 
 
@@ -236,6 +283,7 @@ RSpecには表示の出力をきれいにする-format documentationオプショ
 
 [RSpecには表示の出力をキレイにする --format documentation というオプションがある - コード日進月歩](https://shinkufencer.hateblo.jp/entry/2019/01/21/233000)
 
+
 ### spec/support配下のファイルの読み込み設定
 
 
@@ -247,6 +295,7 @@ Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f 
 
 [RSpec 設定](https://zenn.dev/atelier_mirai/articles/16d7f9a8e95fd5)
 
+
 ### system RSpecファイルの作成
 
 
@@ -257,6 +306,7 @@ bundle exec rails g rspec:system ファイル名
 ```
 
 このコマンドによりspecディレクトリ配下にsystemディレクトリが作成され、その配下にファイルが作成されます。
+
 
 ### 特定のテストのみ実行する方法
 
@@ -305,6 +355,7 @@ end
 このコメントアウトを外すだけでdescribe、content、itなどの頭にfをつけるだけでそのテストのみを実行することができます。
 
 [[Rspec] 実行するテストケースを限定する方法](https://osamudaira.com/490/)
+
 
 # 参考サイト
 
