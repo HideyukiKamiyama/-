@@ -76,3 +76,5 @@ rake hello_world:greeting
 [Rakeタスクの実装 #Ruby - Qiita](https://qiita.com/yoshito410kam/items/26c3c6e519d4990ed739)
 
 [【Rails 】Rakeタスクとは #Rakeタスク - Qiita](https://qiita.com/mmaumtjgj/items/8384b6a26c97965bf047)
+
+[class Rake::Task (Ruby 3.2 リファレンスマニュアル)](https://docs.ruby-lang.org/ja/latest/class/Rake=3a=3aTask.html)
