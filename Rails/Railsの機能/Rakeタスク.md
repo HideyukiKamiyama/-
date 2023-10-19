@@ -5,22 +5,32 @@ RakeタスクとはRailsアプリケーションにおける処理（アプリ�
 `whenever`と組み合わせることで処理を自動化することができる。
 
 
-# 作成方法
+# 使用方法
 
 今回は"Hello World!"を返す簡単なRakeタスクを作成します。
+
+
+## Rakeファイルの作成
+
+RakeタスクをまとめておくファイルをRakeファイルと呼び、以下のコマンドで作成します。
 
 ```
 rails g task hello_world
 ```
 
-上記のコマンドを実行することで`lib/tasks/`の配下に以下のコードが記述された`hello_world.rake`というファイルが作成されます。
+上記のコマンドを実行することで`lib/tasks/`の配下に`hello_world.rake`というファイルが作成されます。
+
+
+## Rakeファイルの編集
+
+先ほどのコマンドで作成したRakeファイルには初めから以下のコードが記述されています。
 
 ```ruby
 namespace :greet do
 end
 ```
 
-上記のコードを次のように書き換えます。
+"Hello World!"を返すタスクにするために上記のコードを次のように書き換えます。
 
 ```ruby
 namespace :hello_world do
@@ -47,8 +57,16 @@ descripton（説明）のこと。そのタスクが何をするタスクなの�
 taskメソッドは実行するタスクを定義するためのメソッドです。上記の例では`:greetong`という名前がタスクに付けられており、タスクの処理として`puts "Hello World!"`を返します。
 
 
+# Rakeタスクの実行
 
+次のコマンドで先ほど作成したRakeタスクが実行され"Hello World!"が表示されます。
 
+```
+rake hello_world:greeting
+# => Hello World!
+```
+
+上記の`hello_world`は名前空間です。マイグレーションファイルを実行する際に使う`db:migrate`も`db`という名前空間を使用しています。
 
 
 # 参考サイト
