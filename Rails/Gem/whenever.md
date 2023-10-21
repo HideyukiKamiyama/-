@@ -67,9 +67,18 @@ end
   Rails内のメソッドの実行
 
 
+```ruby
+# このようにしてjob_typeを設定する
+job_type :rake, "パス"
+```
+
+
 ## `config/schedule.rb`ファイルの編集
 
-
+```ruby
+# Rails.root(Railsメソッド)を使用するために必要
+require File.expand_path(File.dirname(__FILE__) + '/environment')
+```
 
 
 # `config/schedule.rb`ファイルの実行、取り消し
