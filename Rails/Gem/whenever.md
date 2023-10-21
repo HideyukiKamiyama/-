@@ -13,6 +13,7 @@ crontab -l
 crontab -r
 ```
 
+
 # wheneverとは？
 
 先ほどのcronをRubyで操作できるようにするためのgemです。
@@ -50,6 +51,27 @@ end
 上記の例では１分毎に対象のタスクを実行するよう設定されています。
 
 
+## job_type
+
+`config/schedule.rb`ファイル内でジョブタイプの設定をすることができる。
+
+主なジョブタイプは次の3種類
+
+- `rake`
+  rakeタスクの実行
+
+- `command`
+  bashコマンドの実行
+  
+- `runner`
+  Rails内のメソッドの実行
+
+
+## `config/schedule.rb`ファイルの編集
+
+
+
+
 # `config/schedule.rb`ファイルの実行、取り消し
 
 `config/schedule.rb`ファイルに定期実行の設定を記述したら次のコマンドでファイルの内容を読み込ませます。
@@ -76,3 +98,5 @@ $ bundle exec whenever --clear-crontab
 [【Rails】定期実行をしてみよう！（whenever, cron） | ISSEN](https://blog.to-ko-s.com/rails-periodic-execution/)
 
 [未経験からWebエンジニアを目指す [Rails] Rakeタスク、cron、wheneverを使って一時間ごとにタスクを実行](https://osamudaira.com/358/)
+
+[[Rails]Rails5 wheneverでRakeタスクを定期的に実行](https://zenn.dev/yusuke_docha/articles/2d2cfd1030f6ac)
