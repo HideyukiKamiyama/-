@@ -92,9 +92,7 @@ end
 
 ## job_type
 
-`config/schedule.rb`ファイル内でジョブタイプの設定をすることができます。
-
-主なジョブタイプは次の3種類
+`config/schedule.rb`ファイル内でジョブタイプの設定をすることができ、デフォルトでは次の４種類のジョブタイプが使用できます。
 
 - `rake`
   rakeタスクの実行
@@ -105,10 +103,23 @@ end
 - `runner`
   Rails内のメソッドの実行
 
+- `script`
+  scriptの実行
+
+これらはデフォルトで以下の動きをします。
+
+```
+job_type :command, ":task :output"
+job_type :rake,    "cd :path && :environment_variable=:environment bundle exec rake :task --silent :output"
+job_type :runner,  "cd :path && bin/rails runner -e :environment ':task' :output"
+job_type :script,  "cd :path && :environment_variable=:environment bundle exec script/:task :output"
+```
+
+上記の４種のジョブタイプに当てはまらない場合は以下のようにして自分でジョブタイプを作成することができます。(job_type_nameは自分で好きな名前を付けられる）
 
 ```ruby
 # このようにしてjob_typeを設定する
-job_type :rake, "パス"
+job_type :job_type_name, "パス"
 ```
 
 
@@ -129,8 +140,6 @@ $ bundle exec whenever --clear-crontab
 ```
 
 
-
-
 # 参考サイト
 
 [github whenever](https://github.com/javan/whenever)
@@ -144,3 +153,5 @@ $ bundle exec whenever --clear-crontab
 [Railsでwheneverを使ってcronを設定する #Ruby - Qiita](https://qiita.com/Esfahan/items/e7a924f7078faf3294f2)
 
 [【Rails】記事ステータスの追加 #cron - Qiita](https://qiita.com/mmaumtjgj/items/e78747267c28563d6b78)
+
+[【Rails】wheneverでcronを設定 #cron - Qiita](https://qiita.com/mmaumtjgj/items/19e866f31541abb6c614)
