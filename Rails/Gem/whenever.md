@@ -62,7 +62,8 @@ set :environment, rails_env
 
 set :output, "#{Rails.root}/log/cron.log"
 
-# 以下のような実行したい処理
+# ここよりも上の記述でwhenever実行に必要な記述は終わっているのでここより下に実行したいタスクに関する情報を記述する。
+# 以下サンプル
 every 3.minutes do
   rake # （実行したいタスク）
 end
