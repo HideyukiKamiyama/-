@@ -139,6 +139,13 @@ $ bundle exec whenever --update-crontab
 $ bundle exec whenever --clear-crontab
 ```
 
+## 設定内容の確認
+
+設定内容にエラーが無いかを確認します。
+```
+bundle exec whenever
+```
+
 
 # 参考サイト
 
