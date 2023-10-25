@@ -7,7 +7,16 @@
 
 # 使用方法
 
-次のようにクラス内に`scope`メソッドを書き、実行したいクエリを記述します。
+`scope`の基本構文は次の通りです。
+
+```ruby
+class モデル名 < ApplicationRecord
+  scope :スコープの名前, -> { 条件式 }
+end
+```
+
+上記のようにクラス内に`scope`メソッドを書き、実行したいクエリを記述します。
+以下が実際の使用例です。
 
 ```ruby
 class Article < ApplicationRecord
@@ -22,11 +31,58 @@ Article.published
 ```
 
 
+## 引数の渡し方
+
+`scope`内の条件式に引数を渡したい場合次のように記述することで引数を渡すことができます。
+
+```ruby
+class Article < ApplicationRecord
+  scope :published, -> (count){ where(published: true).limit(count) }
+end
+```
+
+`scope`で定義された上記のような処理は通常のクラスメソッドと同じように呼び出すことができます。
+
+```ruby
+Article.published(5)
+# => Article.where(published: true).limit(5)が実行される
+```
+
+
+## 条件文の使用
+
+`scope`の中で`if`文などを使用して条件分岐をすることができます。
+
+```ruby
+class Order < ApplicationRecord
+  scope :created_before, ->(time) { where(created_at: ...time) if time.present? }
+end
+```
+
+
+## デフォルトスコープ
+
+特定のモデルの全てのクエリに同いじ条件式を適用させたい場合、次のようにデフォルトスコープを使用します。
+
+```ruby
+class Article < ApplicationRecord
+  default_scope :published, -> { where(published: true) }
+end
+```
+
+この記述をしておくことにより`Article`モデルに対してクエリが発行されると次のように`WHERE (published: true)`が含まれたクエリになります。
+
+```sql
+SELECT * FROM articles WHERE (published: true)
+```
+
+
+
 # scopeを使用するメリット
 
 ## 可読性
 
-先ほどのコードを`scope`を使わないで呼び出すと次のような記述になり、`scope`を使用しない場合と比べて読みづらくなります。
+先ほどのコード（`scope :published, -> { where(published: true) }`)を`scope`を使わないで呼び出すと次のような記述になり、`scope`を使用しない場合と比べて読みづらくなります。また、条件式が長くなってしまう場合に`scope`を使うことでコードを短くすることができます。
 
 ```ruby
 Article.where(published: true)
@@ -34,6 +90,16 @@ Article.where(published: true)
 
 
 ## 保守性
+
+繰り返し使用する条件式を`scope`を使って定義することで処理を共通化することができるため、修正が必要になった場合に一箇所修正するだけで全ての条件式を修正することができます。
+
+例えば先ほどの処理に`limit(5)`という処理を追加する場合、先ほどの`scope`に追加するだけで修正が完了します。
+
+```ruby
+class Article < ApplicationRecord
+  scope :published, -> { where(published: true).limit(5) }
+end
+```
 
 
 
