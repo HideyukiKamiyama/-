@@ -115,10 +115,21 @@ f.button :submit, "ボタン名"
 = f.input :image, as: :file
 ```
 
+### ラジオボタン
+
+```
+= f.input_field :カラム名, as: :radio_buttons
+```
+
+ラジオボタンの場合は`input`ではなく`input_field`としないと表示されません。
+また、ラジオボタンの選択肢を`enum`で作成している場合、`enum_help`を使って翻訳することで`simple_form`が自動で読み取り翻訳されたものが表示されます。
+
 
 # 参考サイト
 
 [github simple_form](https://github.com/heartcombo/simple_form)
+
+[github simple_form input_type](https://github.com/heartcombo/simple_form#available-input-types-and-defaults-for-each-column-type)
 
 [simple_form - tanalog](https://tanakanoblogdesu.hatenablog.com/entry/2021/07/14/182432)
 
