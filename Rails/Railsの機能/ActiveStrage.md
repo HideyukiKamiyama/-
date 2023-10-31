@@ -98,9 +98,28 @@ end
 
 ## image_processing
 
-ActiveStrageを使って画像を保存する場合、`image_processing`というgemを使うことができます。
-似たようなgemに`mini_magick`がありますが`mini_magick`はActiveStrage`とは関係がなく、Rubyを使って`ImageMagick`という
+ActiveStrageを使って画像を保存する場合、`image_processing`というgemを使うことで画像を加工することができます。
+似たようなgemに`mini_magick`がありますが`mini_magick`はRubyを使って`ImageMagick`という画像処理ツール扱うためのgemです。
+この`mini_magick`は`image_processing`をインストールすると一緒にインストールされます。
 
+## `variant`メソッド
+
+`image_processing`をインストールすることで`Active Strage`で保存した画像を加工することができる`variant`メソッドを使用出来るようになります。
+このメソッドは引数に処理を渡すことでサイズの調整や切り取りを行うことができます。
+
+### resize
+
+`resize`は画像のサイズを調整するのに使用します。
+基本の使用方法は次の通りです。
+
+```ruby
+Blobオブジェクト.variant( resize: "横幅(x高さ!)")
+```
+
+`resize`オプションは値に横幅を渡すことでアスペクト比を保ったまま画像の横幅を調整することができます。
+また高さの調整もしたい場合は`x高さ!`を横幅に並べて記述する必要がありますが、この時`!`をつけないと高さを指定していないのと同じになってしまうため注意が必要です。
+
+その他にも使えるオプション（水彩画風にする、トリミングするなど）はたくさんあるので気になる場合は[こちら](https://prograshi.com/framework/rails/active-storage_variant/)を確認してください。
 
 
 # 参考サイト
