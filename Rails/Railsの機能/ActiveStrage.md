@@ -56,7 +56,7 @@ amazon:
   region: "" # 例: 'ap-northeast-1'
 ```
 
-`service: Disk`は保存先がこのパソコン内であることを示しており、`root`はその保存先へのパスを表しています。
+`service: Disk`は保存先がこのパソコンであることを示しており、`root`はその保存先へのパスを表しています。
 また、`amazon`の`service: S3`はAmazon S3（Simple Storage Service）を表しておりその下の`access_key_id`や`secret_access_key`はAmazon S3へのアクセス方法に関する情報が記載されています。
 
 先ほどの`config/environments/development.rb`ファイルに記述した以下の記述は上記の`:local`を保存先に指定することを表しています。
@@ -65,6 +65,43 @@ amazon:
 # 保存先を`local`に指定している
 config.active_storage.service = :local
 ```
+
+
+# 保存したいデータとモデルの連携
+
+## `has_one_attached`
+
+データを連動させたいモデルに`has_one_attached`と記述すると対象のモデルに１対１でデータを紐付けることができます。
+
+例えば各Userデータにアバター画像を紐付けたい場合は`User`モデルに次のような記述をします。
+
+```ruby
+class User < ApplicationRecord
+  has_one_attached :avatar
+end
+```
+
+## `has_many_attached`
+
+こちらはレコードとファイルに１対多の関係を設定します。
+
+例えば`Message`モデルが存在し、その一つ一つのレコードに複数の画像を添付できるようにしたい場合は次のようにします。
+
+```ruby
+class Message < ApplicationRecord
+  has_many_attached :images
+end
+```
+
+
+# 画像の加工方法
+
+## image_processing
+
+ActiveStrageを使って画像を保存する場合、`image_processing`というgemを使うことができます。
+似たようなgemに`mini_magick`がありますが`mini_magick`はActiveStrage`とは関係がなく、Rubyを使って`ImageMagick`という
+
+
 
 # 参考サイト
 
