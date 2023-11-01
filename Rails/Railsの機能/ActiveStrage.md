@@ -121,6 +121,13 @@ Blobオブジェクト.variant( resize: "横幅(x高さ!)")
 
 その他にも使えるオプション（水彩画風にする、トリミングするなど）はたくさんあるので気になる場合は[こちら](https://prograshi.com/framework/rails/active-storage_variant/)を確認してください。
 
+## `processed`メソッド
+
+`variant`メソッドの後ろに`processed`メソッドをつけると同じ加工をした画像を確認し、存在する場合はそれを取得します。
+
+```
+Blobオブジェクト.variant( 処理 ).processed
+```
 
 # 参考サイト
 
