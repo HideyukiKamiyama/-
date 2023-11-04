@@ -1,13 +1,11 @@
 # yarnとは
 
+Facebookが作成したパッケージ管理ツールです。npmと互換性があり同じどちらも`package.json`を使用できます。
 
-Facebookが作成したパッケージ管理ツールです。npmと互換性があり同じpackage.jsonを使用できます。
 
 # 使い方
 
-
 ### package.jsonの作成
-
 
 次のコマンドでpackage.jsonを作成します。
 
@@ -17,17 +15,18 @@ yarn init
 
 ### パッケージのインストール
 
-
 ```ruby
-yarn
+yarn install
 ```
 
-こちらのコマンドでpackage.jsonに記述されたパッケージをインストールします。
+こちらのコマンドで`package.json`に記述されたパッケージをインストールします。
+`yarn add`コマンドなどで`package.json`に追加されただけだとまだインストールされていないためこのコマンドを実行する必要があります。
+`package.json`に追加しただけでの状態は`Gemfile`にgemを書いただけの状態と同じようなものです。
 
 ### パッケージの追加
 
-
-次のコマンドでpackage.jsonにパッケージをインストールします。
+次のコマンドで`package.json`にパッケージをインストールします。
+このコマンドの実行後に`yarn install`コマンドを実行しなくてはいけないことに注意が必要です。
 
 ```ruby
 yarn add [パッケージ名]
