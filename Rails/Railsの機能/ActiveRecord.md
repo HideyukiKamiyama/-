@@ -21,6 +21,29 @@ SELECT * FROM articles WHERE (articles.id = 1) LIMIT 1
 ```
 
 
+# 条件
+
+## AND条件
+
+AND条件は`where`メソッドをチェインすることで実行できます。
+
+[Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html#and%E6%9D%A1%E4%BB%B6)
+
+```ruby
+Customer.where(last_name: 'Smith').where(orders_count: [1, 3, 5]))
+```
+
+## OR条件
+
+OR条件は一つ目のリレーションで`or`メソッドを使用し、二つ目のリレーションをその引数に渡すことで実装できます。
+
+```ruby
+Customer.where(last_name: 'Smith').or(Customer.where(orders_count: [1, 3, 5]))
+```
+
+
+[Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html#or%E6%9D%A1%E4%BB%B6)
+
 # 参考サイト
 
 [Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html)
