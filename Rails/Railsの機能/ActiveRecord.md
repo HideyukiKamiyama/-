@@ -37,12 +37,23 @@ Customer.where(last_name: 'Smith').where(orders_count: [1, 3, 5]))
 
 OR条件は一つ目のリレーションで`or`メソッドを使用し、二つ目のリレーションをその引数に渡すことで実装できます。
 
+
+[Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html#or%E6%9D%A1%E4%BB%B6)
+
 ```ruby
 Customer.where(last_name: 'Smith').or(Customer.where(orders_count: [1, 3, 5]))
 ```
 
+## NOT条件
 
-[Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html#or%E6%9D%A1%E4%BB%B6)
+NOT条件は`where.not`で実装することができます。
+
+[Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html#not%E6%9D%A1%E4%BB%B6)
+
+```ruby
+Customer.where.not(orders_count: [1, 3, 5])
+```
+
 
 # 参考サイト
 
