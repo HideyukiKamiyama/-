@@ -55,6 +55,31 @@ Customer.where.not(orders_count: [1, 3, 5])
 ```
 
 
+# 降順、昇順
+
+並び順を変更したい場合は`order`メソッドを使用します。
+`order`メソッドはデフォルトでは昇順になっているため次のように記述することで作成日時で昇順に並べたデータを取得します。
+また引数はシンボル、または文字列を渡します。
+
+```ruby
+Book.order(:created_at)
+# または
+Book.order("created_at")
+```
+
+`order`メソッドは`asc`、`desc`を指定することができ、次のようにすることで昇順、降順を指定することができます。
+
+```ruby
+Book.order(created_at: :desc)
+# または
+Book.order(created_at: :asc)
+# または
+Book.order("created_at DESC")
+# または
+Book.order("created_at ASC")
+```
+
+
 # 参考サイト
 
 [Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html)
