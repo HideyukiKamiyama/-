@@ -20,6 +20,16 @@ Article.find(1)
 SELECT * FROM articles WHERE (articles.id = 1) LIMIT 1
 ```
 
+## select
+
+`select`メソッドはSQLのSELECTと同じ働きをするメソッドで、取得するデータのカラムを指定することができます。
+
+```ruby
+User.select(:name)
+```
+
+上記の例では`name`カラムを指定しているためUserクラスに`email`などの他のカラムがあったとしても`name`カラムのデータのみ取得します。
+
 
 # 条件
 
