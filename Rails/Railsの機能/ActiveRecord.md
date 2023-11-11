@@ -90,6 +90,31 @@ Book.order("created_at ASC")
 ```
 
 
+# Limit、Offset
+
+## Limit
+
+`limit`メソッドはデータを上から何件取得するかを指定します。
+
+```ruby
+モデル名.limit(5)
+```
+
+## Offset
+
+`offset`メソッドは`limit`メソッドとは対照的に引数に渡した数字分のデータを上からスキップし、それ以降のデータを取得します。
+
+```ruby
+モデル名.offset(5)
+```
+
+また、`offset`メソッドは`limit`メソッドと併用することができ、次の例では最初の10件をスキップした後、６件目から５件のデータを取得します。
+
+```ruby
+モデル名.limit(5).offset(10)
+```
+
+
 # 参考サイト
 
 [Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html)
@@ -97,3 +122,5 @@ Book.order("created_at ASC")
 [Active Record の基礎 - Railsガイド](https://railsguides.jp/active_record_basics.html)
 
 [SELECT構文：WHEREで検索条件を設定する - 第3章 SQL構文 - [SMART]](https://rfs.jp/sb/sql/s03/03_2-2.html)
+
+
