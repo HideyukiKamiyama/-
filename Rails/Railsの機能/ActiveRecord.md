@@ -115,6 +115,17 @@ Book.order("created_at ASC")
 ```
 
 
+# Group
+
+SQLで言うところの`GROUP BY`を実行したい場合は次のようになります。
+
+```ruby
+Order.select("created_at").group("created_at")
+```
+
+こちらの例では`Order`（注文）を`"created_at"`でグループ化したデータを取得しています。
+
+
 # 参考サイト
 
 [Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html)
