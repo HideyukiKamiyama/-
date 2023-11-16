@@ -126,6 +126,17 @@ Order.select("created_at").group("created_at")
 こちらの例では`Order`（注文）を`"created_at"`でグループ化したデータを取得しています。
 
 
+# HAVING
+
+SQLでは`GROUP BY`でグループ化した後にデータを検索する場合`HAVING`を使います。
+Railsでも`.having`メソッドを使用することで同じように絞り込むことができます。
+
+```ruby
+Order.select("created_at, sum(total) as total_price").
+  group("created_at").having("sum(total) > ?", 200)
+```
+
+
 # 参考サイト
 
 [Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html)
