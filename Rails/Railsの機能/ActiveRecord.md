@@ -137,6 +137,21 @@ Order.select("created_at, sum(total) as total_price").
 ```
 
 
+# joins
+
+テーブルの結合を行いたい場合は`joins`メソッドを使用します。
+
+```ruby
+Book.joins(:reviews)
+```
+
+また、複数のテーブルを結合したい場合は次のように記述します。
+
+```ruby
+Book.joins(:author, :reviews)
+```
+
+
 # 参考サイト
 
 [Active Record クエリインターフェイス - Railsガイド](https://railsguides.jp/active_record_querying.html)
